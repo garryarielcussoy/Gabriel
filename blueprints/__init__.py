@@ -78,6 +78,7 @@ def after_request(response):
     except Exception as e:
         request_data = response.args.to_dict()
     
+    # Formatting the log
     log_data = json.dumps({
         'status_code': response.status_code,
         'method': request.method,
