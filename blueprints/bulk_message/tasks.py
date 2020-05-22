@@ -187,3 +187,30 @@ def bulk_message_file(receiver, media_url, caption):
 
     # Send the message
     response = requests.post(url, data = data, headers = header, auth = auth)
+
+    '''
+    Store the record to database
+    '''
+    # Get message UUID
+    response = response.__dict__
+    content = response['_content']
+    content = content.decode('utf8') # Decode binary content
+    json_response = json.loads(content) # Turn content into JSON format
+    uuid = json_response['message_uuid']
+    
+    # Create new instance of message object
+    new_message = Message(
+        uuid = uuid,
+        from_number = sender,
+        to_number = receiver,
+        in_or_out = 'out',
+        message_type = 'file',
+        text_message = None,
+        media_url = media_url,
+        caption = caption,
+        status = 'sent'
+    )
+
+    # Store new record into database
+    db.session.add(new_message)
+    db.session.commit()
