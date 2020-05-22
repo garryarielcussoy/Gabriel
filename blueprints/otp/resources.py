@@ -45,12 +45,14 @@ class Otp(Resource):
     :return: to_number: Phone number of end-user who triggered OTP process
     :return: otp_code: The code for verification (a code consists of digits of length six)
     '''
+    @jwt_required
     def post(self):
-        # Take some inputs
+        # Take some inputs and claims
         parser = reqparse.RequestParser()
         parser.add_argument('to_number', location = 'json', required = True)
         parser.add_argument('company_username', location = 'json', required = True)
         args = parser.parse_args()
+        claim = get_jwt_claims()
 
         # Check the requirements
         if (
@@ -70,13 +72,18 @@ class Otp(Resource):
             random_digit = str(random_digit)
             otp_code += random_digit
         
+        # Get company (third party) registered name
+        user = User.query.filter_by(username = claim['username']).first()
+        company_name = user.name
+
         # Preparing some data needed before sending the otp code to related end-user
+        username = claim['username']
         receiver = args['to_number']
-        text_message = "Kode ini bersifat rahasia, jangan pernah memberitahukan kode ini kepada siapapun. "
-        text_message += "Untuk melanjutkan proses, silahkan masukkan kode OTP berikut: " + otp_code
+        text_message = "Kode ini bersifat rahasia, jangan pernah memberitahukan kode ini kepada siapapun termasuk pihak "
+        text_message += company_name +  ". Untuk melanjutkan proses, silahkan masukkan kode OTP berikut: " + otp_code
 
         # Send otp code to related end-user
-        bulk_message_text.s(receiver, text_message).apply_async()
+        bulk_message_text.s(username, receiver, text_message).apply_async()
 
         # Send otp code to third party
         return {'to_number': receiver, 'otp_code': otp_code}, 200

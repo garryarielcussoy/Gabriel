@@ -42,14 +42,16 @@ class BulkMessage(Resource):
     :param object self: A must present keyword argument
     :return: Status OK
     '''
+    @jwt_required
     def post(self):
-        # Take some inputs
+        # Take some inputs and claim
         parser = reqparse.RequestParser()
         parser.add_argument('type', location = 'json', required = True)
         parser.add_argument('csv_file', location = 'json', required = True, type = list)
         parser.add_argument('media_url', location = 'json', required = False)
         parser.add_argument('caption', location = 'json', required = False)
         args = parser.parse_args()
+        claim = get_jwt_claims()
 
         # ----- Check the required arguments -----
         # For all cases
@@ -67,6 +69,7 @@ class BulkMessage(Resource):
         # Looping through each record on csv_file to send the message
         for record in args['csv_file']:
             # Preparing some requirements needed to send the message
+            username = claim['username']
             receiver = record['to_number']
             text_message = record['text_message']
 
@@ -75,21 +78,21 @@ class BulkMessage(Resource):
             '''
             if args['type'] == 'text':
                 # Call related task and process it on background
-                bulk_message_text.s(receiver, text_message).apply_async()
+                bulk_message_text.s(username, receiver, text_message).apply_async()
         
             '''
             For image message type case
             '''
             if args['type'] == 'image':
                 # Call related task and process it on background
-                bulk_message_image.s(receiver, args['media_url'], args['caption']).apply_async()
+                bulk_message_image.s(username, receiver, args['media_url'], args['caption']).apply_async()
             
             '''
             For file message type case
             '''
             if args['type'] == 'file':
                 # Call related task and process it on background
-                bulk_message_file.s(receiver, args['media_url'], args['caption']).apply_async()
+                bulk_message_file.s(username, receiver, args['media_url'], args['caption']).apply_async()
 
         # Return a message
         return {'message': 'Semua pesan sedang dikirim'}, 200

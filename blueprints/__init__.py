@@ -62,7 +62,7 @@ manager.add_command('db', MigrateCommand)
 # ---------- End of database setup ----------
 
 # Import modules related to routing
-from blueprints.auth.__init__ import bp_auth
+from blueprints.user.__init__ import bp_auth
 from blueprints.bulk_message.resources import bp_bulk_message
 from blueprints.otp.resources import bp_otp;
 
