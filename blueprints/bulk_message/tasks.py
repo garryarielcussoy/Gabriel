@@ -67,6 +67,21 @@ def bulk_message_text(receiver, text_message):
     uuid = json_response['message_uuid']
     
     # Create new instance of message object
+    new_message = Message(
+        uuid = uuid,
+        from_number = sender,
+        to_number = receiver,
+        in_or_out = 'out',
+        message_type = 'text',
+        text_message = text_message,
+        media_url = None,
+        caption = None,
+        status = 'sent'
+    )
+
+    # Store new record into database
+    db.session.add(new_message)
+    db.session.commit()
 
 '''
 The following function is used to bulk messaging of image type in background process

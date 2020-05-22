@@ -16,9 +16,9 @@ class Message(db.Model):
     to_number = db.Column(db.String(255), nullable = False, default = '')
     in_or_out = db.Column(db.String(3), nullable = False, default = 'out') # Values can be: in, out
     message_type = db.Column(db.String(255), nullable = False, default = 'text') # Values can be: text, image, file
-    text_message = db.Column(db.Text, nullable = False, default = '')
-    media_url = db.Column(db.String(255), nullable = False, default = '')
-    caption = db.Column(db.String(255), nullable = False, default = '')
+    text_message = db.Column(db.Text, nullable = True, default = None)
+    media_url = db.Column(db.String(255), nullable = True, default = None)
+    caption = db.Column(db.String(255), nullable = True, default = None)
     status = db.Column(db.String(255), nullable = False, default = '')
     timestamp = db.Column(db.DateTime, default = datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     
@@ -45,6 +45,7 @@ class Message(db.Model):
         self.to_number = to_number
         self.in_or_out = in_or_out
         self.message_type = message_type
+        self.text_message = text_message
         self.media_url = media_url
         self.caption = caption
         self.status = status
