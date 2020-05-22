@@ -10,10 +10,14 @@ from flask import Blueprint
 from flask_restful import Api, reqparse, Resource, marshal, inputs
 from flask_jwt_extended import jwt_required, get_jwt_claims
 from sqlalchemy import desc
+from celery import Celery
 
 # Import models
 from blueprints.user.model import User
 from blueprints.message.model import Message
+
+# Import tasks
+from .tasks import bulk_message_text
 
 # Creating blueprint
 bp_bulk_message = Blueprint('bulk_message', __name__)
@@ -63,37 +67,14 @@ class BulkMessage(Resource):
         # Looping through each record on csv_file to send the message
         for record in args['csv_file']:
             # Preparing some requirements needed to send the message
-            url = 'https://messages-sandbox.nexmo.com/v0.1/messages'
-            sender = "14157386170"
             receiver = record['to_number']
             text_message = record['text_message']
-            auth = ('8fe08f4c', 'Mz1oxyxiDZoicksE')
-            header = {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
 
             '''
             For text message type case
             '''
             if args['type'] == 'text':
-                # Compose the message
-                data = {
-                    'from': {'type': 'whatsapp', 'number': sender},
-                    'to': {'type': 'whatsapp', 'number': receiver},
-                    'message': {
-                        'content': {
-                            'type': 'text',
-                            'text': text_message
-                        }
-                    }
-                }
-
-                # Turn json dictionary into json string
-                data = json.dumps(data)
-
-                # Send the message
-                response = requests.post(url, data = data, headers = header, auth = auth)
+                bulk_message_text.s(receiver, text_message).apply_async()
         
             '''
             For image message type case
