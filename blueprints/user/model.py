@@ -15,6 +15,7 @@ class User(db.Model):
     name = db.Column(db.String(255), nullable = False, default = '')
     username = db.Column(db.String(255), nullable = False, default = '', unique = True)
     password = db.Column(db.String(255), nullable = False, default = '')
+    api_key = db.Column(db.String(255), nullable = False, default = '')
     created_at = db.Column(db.DateTime, default = datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     
     # The following dictionary is used to serialize "User" instances into JSON form
@@ -23,17 +24,19 @@ class User(db.Model):
         'name': fields.String,
         'username': fields.String,
         'password': fields.String,
+        'api_key': fields.String,
         'created_at': fields.DateTime,
     }
 
     # Required fields when create new instances of "User" class
     def __init__(
-        self, phone_number, name, username, password
+        self, phone_number, name, username, password, api_key
     ):
         self.phone_number = phone_number
         self.name = name
         self.username = username
         self.password = password
+        self.api_key = api_key
         
     # Reprsentative form to be shown in log
     def __repr__(self):
