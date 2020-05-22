@@ -12,7 +12,8 @@ from flask_cors import CORS
 from celery import Celery
 from blueprints import app, db
 
-# Import from other modules
+# Import models
+from blueprints.user.model import User
 from blueprints.message.model import Message
 
 # Setup and initialize Celery
@@ -54,6 +55,18 @@ def bulk_message_text(receiver, text_message):
 
     # Send the message
     response = requests.post(url, data = data, headers = header, auth = auth)
+
+    '''
+    Store the record to database
+    '''
+    # Get message UUID
+    response = response.__dict__
+    content = response['_content']
+    content = content.decode('utf8') # Decode binary content
+    json_response = json.loads(content) # Turn content into JSON format
+    uuid = json_response['message_uuid']
+    
+    # Create new instance of message object
 
 '''
 The following function is used to bulk messaging of image type in background process
