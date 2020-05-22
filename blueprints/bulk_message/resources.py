@@ -119,6 +119,31 @@ class BulkMessage(Resource):
 
                 # Send the message
                 response = requests.post(url, data = data, headers = header, auth = auth)
+            
+            '''
+            For file message type case
+            '''
+            if args['type'] == 'file':
+                # Compose the message
+                data = {
+                    'from': {'type': 'whatsapp', 'number': sender},
+                    'to': {'type': 'whatsapp', 'number': receiver},
+                    'message': {
+                        'content': {
+                            'type': 'file',
+                            'file': {
+                                'url': args['media_url'],
+                                'caption': args['caption']
+                            }
+                        }
+                    }
+                }
+
+                # Turn json dictionary into json string
+                data = json.dumps(data)
+
+                # Send the message
+                response = requests.post(url, data = data, headers = header, auth = auth)
 
         # Return a message
         return {'message': 'Semua pesan sedang dikirim'}, 200
