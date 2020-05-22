@@ -17,7 +17,7 @@ from blueprints.user.model import User
 from blueprints.message.model import Message
 
 # Import tasks
-from .tasks import bulk_message_text
+from .tasks import bulk_message_text, bulk_message_image, bulk_message_file
 
 # Creating blueprint
 bp_bulk_message = Blueprint('bulk_message', __name__)
@@ -74,57 +74,22 @@ class BulkMessage(Resource):
             For text message type case
             '''
             if args['type'] == 'text':
+                # Call related task and process it on background
                 bulk_message_text.s(receiver, text_message).apply_async()
         
             '''
             For image message type case
             '''
             if args['type'] == 'image':
-                # Compose the message
-                data = {
-                    'from': {'type': 'whatsapp', 'number': sender},
-                    'to': {'type': 'whatsapp', 'number': receiver},
-                    'message': {
-                        'content': {
-                            'type': 'image',
-                            'image': {
-                                'url': args['media_url'],
-                                'caption': args['caption']
-                            }
-                        }
-                    }
-                }
-
-                # Turn json dictionary into json string
-                data = json.dumps(data)
-
-                # Send the message
-                response = requests.post(url, data = data, headers = header, auth = auth)
+                # Call related task and process it on background
+                bulk_message_image.s(receiver, args['media_url'], args['caption']).apply_async()
             
             '''
             For file message type case
             '''
             if args['type'] == 'file':
-                # Compose the message
-                data = {
-                    'from': {'type': 'whatsapp', 'number': sender},
-                    'to': {'type': 'whatsapp', 'number': receiver},
-                    'message': {
-                        'content': {
-                            'type': 'file',
-                            'file': {
-                                'url': args['media_url'],
-                                'caption': args['caption']
-                            }
-                        }
-                    }
-                }
-
-                # Turn json dictionary into json string
-                data = json.dumps(data)
-
-                # Send the message
-                response = requests.post(url, data = data, headers = header, auth = auth)
+                # Call related task and process it on background
+                bulk_message_file.s(receiver, args['media_url'], args['caption']).apply_async()
 
         # Return a message
         return {'message': 'Semua pesan sedang dikirim'}, 200

@@ -54,3 +54,81 @@ def bulk_message_text(receiver, text_message):
 
     # Send the message
     response = requests.post(url, data = data, headers = header, auth = auth)
+
+'''
+The following function is used to bulk messaging of image type in background process
+
+:param string receiver: Phone number of receiver
+:param string media_url: Image url where the image (which will be sent to receiver) lies
+:param string caption: Caption of the image
+'''
+@celery.task(name = "bulk_message_image")
+def bulk_message_image(receiver, media_url, caption):
+    # Preparing some requirements needed to send the message
+    url = 'https://messages-sandbox.nexmo.com/v0.1/messages'
+    sender = "14157386170"
+    auth = ('8fe08f4c', 'Mz1oxyxiDZoicksE')
+    header = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+
+    # Compose the message
+    data = {
+        'from': {'type': 'whatsapp', 'number': sender},
+        'to': {'type': 'whatsapp', 'number': receiver},
+        'message': {
+            'content': {
+                'type': 'image',
+                'image': {
+                    'url': media_url,
+                    'caption': caption
+                }
+            }
+        }
+    }
+
+    # Turn json dictionary into json string
+    data = json.dumps(data)
+
+    # Send the message
+    response = requests.post(url, data = data, headers = header, auth = auth)
+
+'''
+The following function is used to bulk messaging of file type in background process
+
+:param string receiver: Phone number of receiver
+:param string media_url: File url where the file (which will be sent to receiver) lies
+:param string caption: Caption of the file
+'''
+@celery.task(name = "bulk_message_file")
+def bulk_message_file(receiver, media_url, caption):
+    # Preparing some requirements needed to send the message
+    url = 'https://messages-sandbox.nexmo.com/v0.1/messages'
+    sender = "14157386170"
+    auth = ('8fe08f4c', 'Mz1oxyxiDZoicksE')
+    header = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+
+    # Compose the message
+    data = {
+        'from': {'type': 'whatsapp', 'number': sender},
+        'to': {'type': 'whatsapp', 'number': receiver},
+        'message': {
+            'content': {
+                'type': 'file',
+                'file': {
+                    'url': media_url,
+                    'caption': caption
+                }
+            }
+        }
+    }
+
+    # Turn json dictionary into json string
+    data = json.dumps(data)
+
+    # Send the message
+    response = requests.post(url, data = data, headers = header, auth = auth)
