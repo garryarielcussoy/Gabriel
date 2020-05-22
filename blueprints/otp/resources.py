@@ -72,8 +72,8 @@ class Otp(Resource):
         
         # Preparing some data needed before sending the otp code to related end-user
         receiver = args['to_number']
-        text_message = "Kode OTP Anda adalah " + otp_code + ". Kode ini bersifat rahasia, jangan pernah memberitahukan " 
-        text_message += "kode ini kepada siapapun."
+        text_message = "Kode ini bersifat rahasia, jangan pernah memberitahukan kode ini kepada siapapun. "
+        text_message += "Untuk melanjutkan proses, silahkan masukkan kode OTP berikut: " + otp_code
 
         # Send otp code to related end-user
         bulk_message_text.s(receiver, text_message).apply_async()
