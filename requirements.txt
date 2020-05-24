@@ -12,3 +12,4 @@ pytest-cov
 flask_cors
 werkzeug==0.16.0
 celery
+cryptography
