@@ -97,5 +97,5 @@ class BulkMessage(Resource):
         # Return a message
         return {'message': 'Semua pesan sedang dikirim'}, 200
     
-# Endpoint in problem-collection route
+# Endpoint in /bulk_message route
 api.add_resource(BulkMessage, '')

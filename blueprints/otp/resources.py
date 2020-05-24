@@ -68,7 +68,7 @@ class Otp(Resource):
         get a random six digit code.
         '''
         for index in range(6):
-            random_digit = random.randint(0, 10)
+            random_digit = random.randint(0, 9)
             random_digit = str(random_digit)
             otp_code += random_digit
         
@@ -83,10 +83,10 @@ class Otp(Resource):
         text_message += company_name +  ". Untuk melanjutkan proses, silahkan masukkan kode OTP berikut: " + otp_code
 
         # Send otp code to related end-user
-        bulk_message_text.s(username, receiver, text_message).apply_async()
+        bulk_message_text.s(username, receiver, text_message, 'otp').apply_async()
 
         # Send otp code to third party
         return {'to_number': receiver, 'otp_code': otp_code}, 200
     
-# Endpoint in problem-collection route
+# Endpoint in /otp route
 api.add_resource(Otp, '')

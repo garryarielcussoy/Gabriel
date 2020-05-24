@@ -27,9 +27,10 @@ The following function is used to bulk messaging of text type in background proc
 :param string username: Username of related company (third party)
 :param string receiver: Phone number of receiver
 :param string text_message: The message of type text which will be sent to receiver
+:param string indicator: Variable which indicates general or otp type message
 '''
 @celery.task(name = "bulk_message_text")
-def bulk_message_text(username, receiver, text_message):
+def bulk_message_text(username, receiver, text_message, indicator = 'general'):
     # Get sender phone number and auth key
     user = User.query.filter_by(username = username).first()
     sender = user.phone_number
@@ -75,6 +76,10 @@ def bulk_message_text(username, receiver, text_message):
     content = content.decode('utf8') # Decode binary content
     json_response = json.loads(content) # Turn content into JSON format
     uuid = json_response['message_uuid']
+
+    # Removing OTP code from the text before store it to database (for OTP message only)
+    if indicator == 'otp':
+        text_message = text_message[:-6] + '******'
     
     # Create new instance of message object
     new_message = Message(
