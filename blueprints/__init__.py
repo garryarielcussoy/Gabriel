@@ -64,11 +64,13 @@ manager.add_command('db', MigrateCommand)
 # Import modules related to routing
 from blueprints.user.__init__ import bp_auth
 from blueprints.bulk_message.resources import bp_bulk_message
+from blueprints.message.resources import bp_message;
 from blueprints.otp.resources import bp_otp;
 
 # Register routes
 app.register_blueprint(bp_auth, url_prefix = '/login')
 app.register_blueprint(bp_bulk_message, url_prefix = '/message_bulk')
+app.register_blueprint(bp_message, url_prefix = '/message')
 app.register_blueprint(bp_otp, url_prefix = '/otp')
 
 # Create the database
