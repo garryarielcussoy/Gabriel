@@ -97,6 +97,10 @@ class GetHistory(Resource):
         args=parser.parse_args()
 
         get_history= Message.query.filter_by(from_number='14157386170')
+        
+        if get_history == None:
+            return {'status': 'Data Tidak Ditemukan'}, 403
+
         offset=(args['p']*args['rp'])-args['rp']
         #looping all quaery to provide list of products
         rows=[]
