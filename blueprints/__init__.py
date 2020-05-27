@@ -63,10 +63,11 @@ manager.add_command('db', MigrateCommand)
 
 # Import modules related to routing
 from blueprints.bulk_message.resources import bp_bulk_message;
+from blueprints.message.resources import bp_message;
 
 # Register routes
 app.register_blueprint(bp_bulk_message, url_prefix='/message_bulk')
-
+app.register_blueprint(bp_message,url_prefix='/message')
 # Create the database
 db.create_all()
 
