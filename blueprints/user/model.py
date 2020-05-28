@@ -11,32 +11,28 @@ The following class is used to make the model of "User" table.
 class User(db.Model):
     # Define the property (each property associated with a column in database)
     __tablename__ = 'user'
-    phone_number = db.Column(db.String(255), primary_key = True, nullable = False)
+    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
     name = db.Column(db.String(255), nullable = False, default = '')
     username = db.Column(db.String(255), nullable = False, default = '', unique = True)
     password = db.Column(db.String(255), nullable = False, default = '')
-    api_key = db.Column(db.String(255), nullable = False, default = '')
     created_at = db.Column(db.DateTime, default = datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     
     # The following dictionary is used to serialize "User" instances into JSON form
     response_fields = {
-        'phone_number': fields.String,
+        'id': fields.Integer,
         'name': fields.String,
         'username': fields.String,
         'password': fields.String,
-        'api_key': fields.String,
         'created_at': fields.DateTime,
     }
 
     # Required fields when create new instances of "User" class
     def __init__(
-        self, phone_number, name, username, password, api_key
+        self, name, username, password
     ):
-        self.phone_number = phone_number
         self.name = name
         self.username = username
         self.password = password
-        self.api_key = api_key
         
     # Reprsentative form to be shown in log
     def __repr__(self):
