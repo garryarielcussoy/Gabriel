@@ -33,7 +33,7 @@ class Message(db.Model):
         'media_url': fields.String,
         'caption': fields.String,
         'status': fields.String,
-        'created_at': fields.DateTime,
+        'timestamp': fields.String,
     }
 
     # Required fields when create new instances of "Message" class

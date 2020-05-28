@@ -104,7 +104,7 @@ class GetHistory(Resource):
         offset=(args['p']*args['rp'])-args['rp']
         #looping all quaery to provide list of products
         rows=[]
-        for row in get_history.limit(args['rp']).offset(offset).all():
+        for row in get_history.order_by(Message.timestamp.desc()).offset(offset).limit(args['rp']).all():
             rows.append(marshal(row, Message.response_fields))
         return rows, 200
 
