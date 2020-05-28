@@ -107,9 +107,51 @@ class GetHistory(Resource):
         for row in get_history.order_by(Message.timestamp.desc()).offset(offset).limit(args['rp']).all():
             rows.append(marshal(row, Message.response_fields))
         return rows, 200
+    
 
+    
+class GetById(Resource):
+    # @get_jwt_claims
+    # @internal_required
+    def get(self,uuid):
+        parser=reqparse.RequestParser()
+        parser.add_argument('p', location='args', type=int,default=1)  
+        parser.add_argument('rp', location='args', type=int, default=25)
+        args=parser.parse_args()
+        get_history= Message.query.filter_by(uuid=uuid)
+        
+        if get_history == None:
+            return {'status': 'Data Tidak Ditemukan'}, 403
+        offset=(args['p']*args['rp'])-args['rp']
+        #looping all quaery to provide list of products
+        rows=[]
+        for row in get_history.limit(args['rp']).offset(offset).all():
+            rows.append(marshal(row, Message.response_fields))
+        return rows, 200
+
+    
+class GetByNum(Resource):
+    # @get_jwt_claims
+    # @internal_required
+    def get(self,phone_num):
+        parser=reqparse.RequestParser()
+        parser.add_argument('p', location='args', type=int,default=1)  
+        parser.add_argument('rp', location='args', type=int, default=25)
+        args=parser.parse_args()
+        get_history= Message.query.filter_by(to_number="{}".format(phone_num))
+        
+        if get_history == None:
+            return {'status': 'Data Tidak Ditemukan'}, 403
+        offset=(args['p']*args['rp'])-args['rp']
+        #looping all quaery to provide list of products
+        rows=[]
+        for row in get_history.limit(args['rp']).offset(offset).all():
+            rows.append(marshal(row, Message.response_fields))
+        return rows, 200
 
 ###ENPOINTS
 api.add_resource(MessageOne, '')
 api.add_resource(CallbackMsg, '/status')
 api.add_resource(GetHistory, '/history')
+api.add_resource(GetById, '/history/id/<string:uuid>')
+api.add_resource(GetByNum, '/history/num/<int:phone_num>')
