@@ -107,9 +107,36 @@ class GetHistory(Resource):
         for row in get_history.order_by(Message.timestamp.desc()).offset(offset).limit(args['rp']).all():
             rows.append(marshal(row, Message.response_fields))
         return rows, 200
+    
 
+    
+class GetById(Resource):
+    # @get_jwt_claims
+    # @internal_required
+    def get(self,id):
+        get_history= Message.query.filter_by(uuid=id)
+        
+        if get_history == None:
+            return {'status': 'Data Tidak Ditemukan'}, 403
+        json_history=marshal(get_history, Message.response_fields)
+
+        return json_history,200 
+    
+class GetByNum(Resource):
+    # @get_jwt_claims
+    # @internal_required
+    def get(self,phone_num):
+        get_history= Message.query.filter_by(to_number=phone_num)
+        
+        if get_history == None:
+            return {'status': 'Data Tidak Ditemukan'}, 403
+        json_history=marshal(get_history, Message.response_fields)
+
+        return json_history,200 
 
 ###ENPOINTS
 api.add_resource(MessageOne, '')
 api.add_resource(CallbackMsg, '/status')
 api.add_resource(GetHistory, '/history')
+api.add_resource(GetById, '/history/<str:id>')
+api.add_resource(GetByNum, '/history/<int:num>')
