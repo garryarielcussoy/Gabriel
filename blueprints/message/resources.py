@@ -89,7 +89,7 @@ class GetHistory(Resource):
     def options(self):
         return 200
     
-    @get_jwt_claims
+    @jwt_required
     def get(self):
         
         parser=reqparse.RequestParser()
@@ -112,7 +112,7 @@ class GetHistory(Resource):
 
     
 class GetById(Resource):
-    @get_jwt_claims
+    @jwt_required
     def get(self,uuid):
         parser=reqparse.RequestParser()
         parser.add_argument('p', location='args', type=int,default=1)  
@@ -131,7 +131,7 @@ class GetById(Resource):
 
     
 class GetByNum(Resource):
-    @get_jwt_claims
+    @jwt_required
     def get(self,phone_num):
         parser=reqparse.RequestParser()
         parser.add_argument('p', location='args', type=int,default=1)  
