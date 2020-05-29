@@ -9,6 +9,7 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 
 # Import model
 from blueprints.user.model import User
+from blueprints.product.model import Product
 
 # Creating blueprint
 bp_auth = Blueprint('auth', __name__)
@@ -47,12 +48,15 @@ class Login(Resource):
         # Checking whether the username and password match data in database or not
         encrypted = hashlib.md5(args['password'].encode()).hexdigest()
         match_user = User.query.filter_by(username = args['username']).filter_by(password = encrypted).first()
+        
         if match_user is None:
             return {'message': 'Username atau password yang kamu masukkan salah'}, 401
 
         # Create the token
-        token = create_access_token(identity = args['username'], user_claims = {'username': args['username']})
+        token = create_access_token(identity = args['username'], user_claims = {'username': args['username']}, 'data':User.response_fields)
         return {'message': 'Login berhasil', 'token': token}, 200
+
+
 
 # Endpoint in Auth
 api.add_resource(Login, '')

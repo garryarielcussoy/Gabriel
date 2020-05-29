@@ -31,6 +31,7 @@ class Product(db.Model):
         'created_at': fields.DateTime,
     }
 
+
     # Required fields when create new instances of "Product" class
     def __init__(
         self, user_id, name, phone_number, api_key
