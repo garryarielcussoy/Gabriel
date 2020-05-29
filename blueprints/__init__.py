@@ -43,7 +43,7 @@ def admin_required(fn):
 # ---------- Database Setup ----------
 # Connect to database
 try:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:alterra123@localhost:3306/gabriel'    
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:g4ntengwok@localhost:3306/gabriel'    
 except Exception as e:
     raise e
 
@@ -66,9 +66,11 @@ from blueprints.user.__init__ import bp_auth
 from blueprints.bulk_message.resources import bp_bulk_message
 from blueprints.message.resources import bp_message;
 from blueprints.otp.resources import bp_otp;
+from blueprints.register.resources import bp_register
 
 # Register routes
 app.register_blueprint(bp_auth, url_prefix = '/login')
+app.register_blueprint(bp_register,url_prefix='/register')
 app.register_blueprint(bp_bulk_message, url_prefix = '/message_bulk')
 app.register_blueprint(bp_message, url_prefix = '/message')
 app.register_blueprint(bp_otp, url_prefix = '/otp')
