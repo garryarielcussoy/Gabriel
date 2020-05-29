@@ -70,13 +70,13 @@ class BulkMessage(Resource):
             # Preparing some requirements needed to send the message
             product_id = product.id
             to_number = record['to_number']
-            text_message = record['text_message']
 
             '''
             For text message type case
             '''
             if record['type'] == 'text':
                 # Call related task and process it on background
+                text_message = record['text_message']
                 bulk_message_text.s(product_id, to_number, text_message, 'general', record['receiver']).apply_async()
         
             '''
@@ -84,14 +84,14 @@ class BulkMessage(Resource):
             '''
             if record['type'] == 'image':
                 # Call related task and process it on background
-                bulk_message_image.s(username, receiver, args['media_url'], args['caption']).apply_async()
+                bulk_message_image.s(product_id, to_number, record['media_url'], record['caption'], record['receiver']).apply_async()
             
             '''
             For file message type case
             '''
             if record['type'] == 'file':
                 # Call related task and process it on background
-                bulk_message_file.s(username, receiver, args['media_url'], args['caption']).apply_async()
+                bulk_message_file.s(product_id, to_number, record['media_url'], record['caption'], record['receiver']).apply_async()
 
         # Return a message
         return {'message': 'Sedang mengirim pesan'}, 200
