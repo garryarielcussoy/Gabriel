@@ -15,6 +15,7 @@ from celery import Celery
 # Import models
 from blueprints.user.model import User
 from blueprints.message.model import Message
+from blueprints.product.model import Product
 
 # Import tasks
 from .tasks import bulk_message_text, bulk_message_image, bulk_message_file
@@ -46,56 +47,54 @@ class BulkMessage(Resource):
     def post(self):
         # Take some inputs and claim
         parser = reqparse.RequestParser()
-        parser.add_argument('type', location = 'json', required = True)
         parser.add_argument('csv_file', location = 'json', required = True, type = list)
-        parser.add_argument('media_url', location = 'json', required = False)
-        parser.add_argument('caption', location = 'json', required = False)
         args = parser.parse_args()
         claim = get_jwt_claims()
 
-        # ----- Check the required arguments -----
-        # For all cases
-        if (
-            args['type'] == '' or args['type'] is None
-            or args['csv_file'] == []
-        ):
-            return {'message': 'Tipe pesan harus diisi dan file csv / xls tidak boleh kosong'}, 400
-
-        # For file or image type cases
-        if args['type'] == 'image' or args['type'] == 'file':
-            if args['media_url'] == '' or args['media_url'] is None:
-                return {'message': 'Tidak ada file ataupun gambar yang diunggah'}, 400
+        # Check the required argument
+        if args['csv_file'] == '' or args['csv_file'] == [] or args['csv_file'] is None:
+            return {'message': 'Tidak ada file CSV / XLS yang diunggah'}, 400
         
         # Looping through each record on csv_file to send the message
         for record in args['csv_file']:
-            # Preparing some requirements needed to send the message
+            # Get user ID
             username = claim['username']
-            receiver = record['to_number']
-            text_message = record['text_message']
+            user = User.query.filter_by(username = username).first()
+            user_id = user.id
+
+            # Get related product
+            product = Product.query.filter_by(user_id = user_id).filter_by(name = record['product_name']).first()
+            if product is None:
+                continue
+
+            # Preparing some requirements needed to send the message
+            product_id = product.id
+            to_number = record['to_number']
 
             '''
             For text message type case
             '''
-            if args['type'] == 'text':
+            if record['type'] == 'text':
                 # Call related task and process it on background
-                bulk_message_text.s(username, receiver, text_message).apply_async()
+                text_message = record['text_message']
+                bulk_message_text.s(product_id, to_number, text_message, 'general', record['receiver']).apply_async()
         
             '''
             For image message type case
             '''
-            if args['type'] == 'image':
+            if record['type'] == 'image':
                 # Call related task and process it on background
-                bulk_message_image.s(username, receiver, args['media_url'], args['caption']).apply_async()
+                bulk_message_image.s(product_id, to_number, record['media_url'], record['caption'], record['receiver']).apply_async()
             
             '''
             For file message type case
             '''
-            if args['type'] == 'file':
+            if record['type'] == 'file':
                 # Call related task and process it on background
-                bulk_message_file.s(username, receiver, args['media_url'], args['caption']).apply_async()
+                bulk_message_file.s(product_id, to_number, record['media_url'], record['caption'], record['receiver']).apply_async()
 
         # Return a message
-        return {'message': 'Semua pesan sedang dikirim'}, 200
+        return {'message': 'Sedang mengirim pesan'}, 200
     
 # Endpoint in /bulk_message route
 api.add_resource(BulkMessage, '')
