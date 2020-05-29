@@ -79,7 +79,14 @@ def bulk_message_text(product_id, to_number, text_message, indicator = 'general'
     content = response['_content']
     content = content.decode('utf8') # Decode binary content
     json_response = json.loads(content) # Turn content into JSON format
-    uuid = json_response['message_uuid']
+    
+    # Check UUID and status
+    uuid = 'Error'
+    status = 'sent'
+    if 'message_uuid' in json_response:
+        uuid = json_response['message_uuid']
+    else:
+        status = 'failed'
 
     # Removing OTP code from the text before store it to database (for OTP message only)
     if indicator == 'otp':
@@ -97,7 +104,7 @@ def bulk_message_text(product_id, to_number, text_message, indicator = 'general'
         text_message = text_message,
         media_url = None,
         caption = None,
-        status = 'sent'
+        status = status
     )
 
     # Store new record into database
@@ -164,7 +171,14 @@ def bulk_message_image(product_id, to_number, media_url, caption, receiver = '')
     content = response['_content']
     content = content.decode('utf8') # Decode binary content
     json_response = json.loads(content) # Turn content into JSON format
-    uuid = json_response['message_uuid']
+    
+    # Check UUID and status
+    uuid = 'Error'
+    status = 'sent'
+    if 'message_uuid' in json_response:
+        uuid = json_response['message_uuid']
+    else:
+        status = 'failed'
     
     # Create new instance of message object
     new_message = Message(
@@ -245,7 +259,14 @@ def bulk_message_file(product_id, to_number, media_url, caption, receiver = ''):
     content = response['_content']
     content = content.decode('utf8') # Decode binary content
     json_response = json.loads(content) # Turn content into JSON format
-    uuid = json_response['message_uuid']
+    
+    # Check UUID and status
+    uuid = 'Error'
+    status = 'sent'
+    if 'message_uuid' in json_response:
+        uuid = json_response['message_uuid']
+    else:
+        status = 'failed'
     
     # Create new instance of message object
     new_message = Message(
