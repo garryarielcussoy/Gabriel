@@ -42,5 +42,5 @@ class Register(Resource):
 
         return {'status':'Pendaftaran Berhasil, Silakan Login'}, 200
 
-
+#ENPOINT Register
 api.add_resource(Register,'')
