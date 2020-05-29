@@ -8,7 +8,7 @@ bp_product=Blueprint('product', __name__)
 api=Api(bp_product)
 
 
-'''This part enable all registered user to add and get their product list from database''''
+'''This part enable all registered user to add and get their product list from database'''
 class AddProduct(Resource):
     def options(self):
         return 200
