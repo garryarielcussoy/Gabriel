@@ -67,6 +67,7 @@ from blueprints.bulk_message.resources import bp_bulk_message
 from blueprints.message.resources import bp_message;
 from blueprints.otp.resources import bp_otp;
 from blueprints.register.resources import bp_register
+from blueprints.product.resources import bp_product
 
 # Register routes
 app.register_blueprint(bp_auth, url_prefix = '/login')
@@ -74,6 +75,7 @@ app.register_blueprint(bp_register,url_prefix='/register')
 app.register_blueprint(bp_bulk_message, url_prefix = '/message_bulk')
 app.register_blueprint(bp_message, url_prefix = '/message')
 app.register_blueprint(bp_otp, url_prefix = '/otp')
+app.register_blueprint(bp_product, url_prefix='/product')
 
 # Create the database
 db.create_all()

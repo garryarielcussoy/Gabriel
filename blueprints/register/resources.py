@@ -28,15 +28,20 @@ class Register(Resource):
         parser.add_argument('password', location = 'json', required = True)
         args = parser.parse_args()
         
+        #encrypt password before it is pushed to database
         hidden_password=hashlib.md5(args['password'].encode()).hexdigest()
-        check_username=User.query.filter_by(username=args['username']).first()
 
+        check_username=User.query.filter_by(username=args['username']).first()
+        
+        #check if input 'name' is already existed in database
         if args['name'] is None or args['username'] is None or args['password'] is  None:
             return {'status':'Tidak Boleh Ada Kolom Yang Kosong'},403
         elif check_username is not None:
             return {'status':'Username Yang Anda Masukan Sudah Terpakai'},404
 
         new_user=User(args['name'], args['username'], hidden_password)
+
+        #Push it to User Table in database
         db.session.add(new_user)
         db.session.commit()
 
