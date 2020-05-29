@@ -16,17 +16,17 @@ api=Api(bp_message)
 
 ###CRUD METHODS
 
-#@jwt_required
-#@internal_required
+
 class MessageOne(Resource):
     def __init__(self):
         pass
-
+    @jwt_required
     def post(self):
         ##Creates Arguments Imput Using JSON BODY
         parser=reqparse.RequestParser()
-        parser.add_argument('message', location='json')
+        parser.add_argument('sender_id', location='json', required=True)
         parser.add_argument('from_number', location='json')
+        parser.add_argument('receiver', location='json', default="None")
         parser.add_argument('to_number', location='json', required=True)
         parser.add_argument('in_or_out', location='json',default='out')
         parser.add_argument('message_type', location='json', required=True)
@@ -40,20 +40,22 @@ class MessageOne(Resource):
         
         '''Identifying the type of messages [text, image, or  file] and executes differently 
            based on its type'''
-           
+
+      
+
         if args['message_type']=='text':
-            send_message_text.s(args['to_number'], args['text_message'], args['in_or_out']).apply_async()
+            send_message_text.s(args['sender_id'],args['receiver'],args['to_number'], args['text_message'], args['in_or_out']).apply_async()
  
         elif args['message_type']=='image':
             if args['media_url']=='None':
                 return {'status':'Media URL Cannot Be Empty'}, 404
             else:
-                send_message_image.s(args['to_number'], args['media_url'],args['caption'], args['in_or_out']).apply_async()
+                send_message_image.s(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out']).apply_async()
         elif args['message_type']=='file':
             if args['media_url']=='None':
                 return {'status':'Media URL Cannot Be Empty'}, 404
             else:
-                send_message_file.s(args['to_number'], args['media_url'],args['caption'], args['in_or_out']).apply_async()
+                send_message_file.s(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out']).apply_async()
 
         return {'status':"Terkirim"},200
 
@@ -87,8 +89,7 @@ class GetHistory(Resource):
     def options(self):
         return 200
     
-    # @get_jwt_claims
-    # @internal_required
+    @get_jwt_claims
     def get(self):
         
         parser=reqparse.RequestParser()
@@ -111,8 +112,7 @@ class GetHistory(Resource):
 
     
 class GetById(Resource):
-    # @get_jwt_claims
-    # @internal_required
+    @get_jwt_claims
     def get(self,uuid):
         parser=reqparse.RequestParser()
         parser.add_argument('p', location='args', type=int,default=1)  
@@ -131,8 +131,7 @@ class GetById(Resource):
 
     
 class GetByNum(Resource):
-    # @get_jwt_claims
-    # @internal_required
+    @get_jwt_claims
     def get(self,phone_num):
         parser=reqparse.RequestParser()
         parser.add_argument('p', location='args', type=int,default=1)  

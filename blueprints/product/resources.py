@@ -30,7 +30,22 @@ class AddProduct(Resource):
 
         return {'status':'Produk Berhasil Ditambahkan'},200
     
+    @jwt_required
     def get(self):
-
+        parser=reqparse.RequestParser()
+        parser.add_argument('p', location='args', type=int,default=1)  
+        parser.add_argument('rp', location='args', type=int, default=25)
+        args=parser.parse_args()
+        get_history= Product.query.filter_by(user_id=get_jwt_claims()['data']['id'])
+        
+        if get_history == None:
+            return {'status': 'Data Tidak Ditemukan'}, 403
+        offset=(args['p']*args['rp'])-args['rp']
+        #looping all quaery to provide list of products
+        rows=[]
+        for row in get_history.limit(args['rp']).offset(offset).all():
+            rows.append(marshal(row, Product.response_fields))
+        return rows, 200
+    
     
 
