@@ -43,7 +43,7 @@ def admin_required(fn):
 # ---------- Database Setup ----------
 # Connect to database
 try:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:g4ntengwok@localhost:3306/gabriel'    
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:alterra123@localhost:3306/gabriel'    
 except Exception as e:
     raise e
 
