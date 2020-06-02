@@ -12,6 +12,7 @@ from .model import Message
 # Setup and initialize Celery
 # app.config['CELERY_BROKER_URL'] = 'amqp://guest:guest@localhost:5672/celery_WA'
 app.config['CELERY_BROKER_URL'] = 'amqp://garry:alterra123@localhost:5672/celery_test'
+app.config['CELERY_ALWAYS_EAGER']=True
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
