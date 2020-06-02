@@ -20,7 +20,7 @@ api=Api(bp_message)
 class MessageOne(Resource):
     def __init__(self):
         pass
-    @jwt_required
+    # @jwt_required
     def post(self):
         ##Creates Arguments Imput Using JSON BODY
         parser=reqparse.RequestParser()
@@ -42,22 +42,25 @@ class MessageOne(Resource):
            based on its type'''
 
       
-
+        result=[]
         if args['message_type']=='text':
             send_message_text.s(args['sender_id'],args['receiver'],args['to_number'], args['text_message'], args['in_or_out']).apply_async()
- 
+            result.append(send_message_text(args['sender_id'],args['receiver'],args['to_number'], args['text_message'], args['in_or_out']))
         elif args['message_type']=='image':
             if args['media_url']=='None':
                 return {'status':'Media URL Cannot Be Empty'}, 404
             else:
                 send_message_image.s(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out']).apply_async()
+                result.append(send_message_image(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out']))
         elif args['message_type']=='file':
             if args['media_url']=='None':
                 return {'status':'Media URL Cannot Be Empty'}, 404
             else:
                 send_message_file.s(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out']).apply_async()
+                result.append(send_message_file(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out']))
 
-        return {'status':"Terkirim"},200
+
+        return {'status':result[0]},200
 
 
     def options(self):
@@ -89,7 +92,7 @@ class GetHistory(Resource):
     def options(self):
         return 200
     
-    @jwt_required
+    # @jwt_required
     def get(self):
         
         parser=reqparse.RequestParser()
@@ -112,7 +115,7 @@ class GetHistory(Resource):
 
     
 class GetById(Resource):
-    @jwt_required
+    # @jwt_required
     def get(self,uuid):
         parser=reqparse.RequestParser()
         parser.add_argument('p', location='args', type=int,default=1)  
@@ -131,7 +134,7 @@ class GetById(Resource):
 
     
 class GetByNum(Resource):
-    @jwt_required
+    # @jwt_required
     def get(self,phone_num):
         parser=reqparse.RequestParser()
         parser.add_argument('p', location='args', type=int,default=1)  

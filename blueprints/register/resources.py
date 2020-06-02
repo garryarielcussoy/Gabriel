@@ -43,7 +43,7 @@ class Register(Resource):
 
         #Push it to User Table in database
         db.session.add(new_user)
-        db.session.commit()
+        db.session.commit()    
 
         return {'status':'Pendaftaran Berhasil, Silakan Login'}, 200
 

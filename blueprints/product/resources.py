@@ -4,6 +4,7 @@ from flask_jwt_extended import create_access_token,get_jwt_claims,get_jwt_identi
 from blueprints.product.model import Product
 from blueprints import db, app
 
+
 bp_product=Blueprint('product', __name__)
 api=Api(bp_product)
 
@@ -25,11 +26,12 @@ class AddProduct(Resource):
         args=parser.parse_args()
 
         #Only getting data query which is associated with user id
-        user_id=get_jwt_claims()['data']['id']
+        user_id=get_jwt_claims()['id']
 
-        check_product=Product.query.filter_by(name=args['name'])
+        check_product=Product.query.filter_by(name=args['name']).first()
+       
         if check_product is not None:
-            return {'status':'Produk Sudah Ada Di Data Kami'},403
+            return {'status':'Data Produk Sudah Ada Di Database Kami'},403
 
         new_product=Product(user_id, args['name'], args['phone_number'], args['api_key'])
         #push to Product Table in Database
@@ -46,7 +48,7 @@ class AddProduct(Resource):
         parser.add_argument('p', location='args', type=int,default=1)  
         parser.add_argument('rp', location='args', type=int, default=25)
         args=parser.parse_args()
-        get_history= Product.query.filter_by(user_id=get_jwt_claims()['data']['id'])
+        get_history= Product.query.filter_by(user_id=get_jwt_claims()['id'])
         
         if get_history == None:
             return {'status': 'Data Tidak Ditemukan'}, 403

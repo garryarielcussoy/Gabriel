@@ -10,9 +10,10 @@ from .model import Message
 
 
 # Setup and initialize Celery
-# app.config['CELERY_BROKER_URL'] = 'amqp://guest:guest@localhost:5672/celery_WA'
 app.config['CELERY_BROKER_URL'] = 'amqp://garry:alterra123@localhost:5672/celery_test'
+# app.config['CELERY_BROKER_URL'] = 'amqp://guest@localhost:5672/celery_WA'
 app.config['CELERY_ALWAYS_EAGER']=True
+
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
@@ -51,6 +52,8 @@ def send_message_text(sender_id,receiver_name,receiver_phone, text_message, in_o
     #Push the data into designated Table in database
     db.session.add(sent_msg)
     db.session.commit()
+
+    return uuid
     
 '''
     -params receiver: contains number of receiver of message, must be start by country code
@@ -80,6 +83,8 @@ def send_message_image(sender_id,receiver_name,receiver_phone, media_url, captio
     db.session.add(sent_msg)
     db.session.commit()
 
+    return uuid
+
 '''
     -params receiver: contains number of receiver of message, must be start by country code
                      without "+" sign
@@ -106,6 +111,8 @@ def send_message_file(sender_id,receiver_name,receiver_phone, media_url, caption
     sent_msg= Message(uuid,sender_id,sender,receiver_name,receiver_phone,in_out,"file","None", media_url, caption,"ON PROCESS")
     db.session.add(sent_msg)
     db.session.commit()
+
+    return uuid
 
 '''-params data: contains callbcak response from Nexmo about message_uuid and status of message
                  [submitted','rejected','delivered','read']. ON PROCESS status is default from 
