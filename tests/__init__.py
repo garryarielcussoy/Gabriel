@@ -11,7 +11,7 @@ def reset_db():
     db.create_all()
     encrypted_pass=hashlib.md5('shopee'.encode()).hexdigest()
     user=User("Shopee","shopee",encrypted_pass)
-    product=Product(1,"ShopeePay","628777777","api-key-0001")
+    product=Product(1,"ShopeePay","628777777","api-key:0001")
 
     db.session.add(user)
     db.session.commit()

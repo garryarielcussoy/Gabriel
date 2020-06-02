@@ -19,6 +19,7 @@ from blueprints.product.model import Product
 
 # Setup and initialize Celery
 app.config['CELERY_BROKER_URL'] = 'amqp://garry:alterra123@localhost:5672/celery_test'
+app.config['CELERY_ALWAYS_EAGER'] = True
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
@@ -74,15 +75,10 @@ def bulk_message_text(product_id, to_number, text_message, indicator = 'general'
     '''
     Store the record to database
     '''
-    # Get message UUID
-    response = response.__dict__
-    content = response['_content']
-    content = content.decode('utf8') # Decode binary content
-    json_response = json.loads(content) # Turn content into JSON format
-    
-    # Check UUID and status
+    # Get message UUID and status
     uuid = 'Error'
     status = 'sent'
+    json_response = response.json()
     if 'message_uuid' in json_response:
         uuid = json_response['message_uuid']
     else:
@@ -110,6 +106,9 @@ def bulk_message_text(product_id, to_number, text_message, indicator = 'general'
     # Store new record into database
     db.session.add(new_message)
     db.session.commit()
+
+    # Return the UUID
+    return {'uuid': uuid}
 
 '''
 The following function is used to bulk messaging of image type in background process
@@ -166,15 +165,10 @@ def bulk_message_image(product_id, to_number, media_url, caption, receiver = '')
     '''
     Store the record to database
     '''
-    # Get message UUID
-    response = response.__dict__
-    content = response['_content']
-    content = content.decode('utf8') # Decode binary content
-    json_response = json.loads(content) # Turn content into JSON format
-    
-    # Check UUID and status
+    # Get message UUID and status
     uuid = 'Error'
     status = 'sent'
+    json_response = response.json()
     if 'message_uuid' in json_response:
         uuid = json_response['message_uuid']
     else:
@@ -198,6 +192,9 @@ def bulk_message_image(product_id, to_number, media_url, caption, receiver = '')
     # Store new record into database
     db.session.add(new_message)
     db.session.commit()
+
+    # Return the UUID
+    return {'uuid': uuid}
 
 '''
 The following function is used to bulk messaging of file type in background process
@@ -254,15 +251,10 @@ def bulk_message_file(product_id, to_number, media_url, caption, receiver = ''):
     '''
     Store the record to database
     '''
-    # Get message UUID
-    response = response.__dict__
-    content = response['_content']
-    content = content.decode('utf8') # Decode binary content
-    json_response = json.loads(content) # Turn content into JSON format
-    
-    # Check UUID and status
+    # Get message UUID and status
     uuid = 'Error'
     status = 'sent'
+    json_response = response.json()
     if 'message_uuid' in json_response:
         uuid = json_response['message_uuid']
     else:
@@ -286,3 +278,6 @@ def bulk_message_file(product_id, to_number, media_url, caption, receiver = ''):
     # Store new record into database
     db.session.add(new_message)
     db.session.commit()
+
+    # Return the UUID
+    return {'uuid': uuid}
