@@ -43,7 +43,11 @@ def admin_required(fn):
 # ---------- Database Setup ----------
 # Connect to database
 try:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:alterra123@localhost:3306/gabriel'    
+    env=os.environ.get("FLASK_ENV", "development")
+    if env =="testing":
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:alterra123@localhost:3306/test_gabriel'
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:alterra123@localhost:3306/gabriel'    
 except Exception as e:
     raise e
 
