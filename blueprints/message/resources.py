@@ -5,6 +5,7 @@ from flask_jwt_extended import jwt_required,create_access_token, get_jwt_claims,
 import requests
 import json
 from .model import Message
+from blueprints.product.model import Product
 
 ##Import packages for celery tasks
 from .tasks import send_message_file,send_message_image,send_message_text,callback
@@ -109,7 +110,15 @@ class GetHistory(Resource):
         #looping all quaery to provide list of products
         rows=[]
         for row in get_history.order_by(Message.timestamp.desc()).offset(offset).limit(args['rp']).all():
-            rows.append(marshal(row, Message.response_fields))
+            marshaled_row = marshal(row, Message.response_fields)
+
+            # Search product name
+            sender_id = marshaled_row['sender_id']
+            product = Product.query.filter_by(id = sender_id).first()
+            sender_name = product.name
+            marshaled_row['sender_name'] = sender_name
+
+            rows.append(marshaled_row)
         return rows, 200
     
 
