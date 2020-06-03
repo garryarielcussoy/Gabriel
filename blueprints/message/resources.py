@@ -46,22 +46,22 @@ class MessageOne(Resource):
         result=[]
         if args['message_type']=='text':
             send_message_text.s(args['sender_id'],args['receiver'],args['to_number'], args['text_message'], args['in_or_out']).apply_async()
-            result.append(send_message_text(args['sender_id'],args['receiver'],args['to_number'], args['text_message'], args['in_or_out']))
+            
         elif args['message_type']=='image':
             if args['media_url']=='None':
                 return {'status':'Media URL Cannot Be Empty'}, 404
             else:
                 send_message_image.s(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out']).apply_async()
-                result.append(send_message_image(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out']))
+               
         elif args['message_type']=='file':
             if args['media_url']=='None':
                 return {'status':'Media URL Cannot Be Empty'}, 404
             else:
                 send_message_file.s(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out']).apply_async()
-                result.append(send_message_file(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out']))
+                
 
 
-        return {'status':result[0]},200
+        return {'status':'Terkirim'},200
 
 
     def options(self):
