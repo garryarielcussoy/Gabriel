@@ -131,7 +131,10 @@ class GetHistory(Resource):
 
     
 class GetById(Resource):
-    # @jwt_required
+    def options(self, uuid):
+        return 200
+    
+    @jwt_required
     def get(self,uuid):
         parser=reqparse.RequestParser()
         parser.add_argument('p', location='args', type=int,default=1)  
@@ -144,7 +147,7 @@ class GetById(Resource):
         sender = Product.query.filter_by(user_id = user_id).all()
         sender_id = map(lambda sender_object: sender_object.id, sender)
 
-        get_history = Message.query.filter(Message.sender_id.in_(sender_id)).filter_by(uuid = uuid)
+        get_history = Message.query.filter(Message.sender_id.in_(sender_id)).filter(Message.uuid.like("%" + uuid + "%"))
         
         if get_history == None:
             return {'status': 'Data Tidak Ditemukan'}, 403
@@ -152,12 +155,24 @@ class GetById(Resource):
         #looping all quaery to provide list of products
         rows=[]
         for row in get_history.limit(args['rp']).offset(offset).all():
-            rows.append(marshal(row, Message.response_fields))
+            marshaled_row = marshal(row, Message.response_fields)
+
+            # Search product name
+            sender_id = marshaled_row['sender_id']
+            product = Product.query.filter_by(id = sender_id).first()
+            sender_name = product.name
+            marshaled_row['sender_name'] = sender_name
+
+            rows.append(marshaled_row)
+
         return rows, 200
 
     
 class GetByNum(Resource):
-    # @jwt_required
+    def options(self, phone_num):
+        return 200
+
+    @jwt_required
     def get(self,phone_num):
         parser=reqparse.RequestParser()
         parser.add_argument('p', location='args', type=int,default=1)  
@@ -178,7 +193,16 @@ class GetByNum(Resource):
         #looping all quaery to provide list of products
         rows=[]
         for row in get_history.limit(args['rp']).offset(offset).all():
-            rows.append(marshal(row, Message.response_fields))
+            marshaled_row = marshal(row, Message.response_fields)
+
+            # Search product name
+            sender_id = marshaled_row['sender_id']
+            product = Product.query.filter_by(id = sender_id).first()
+            sender_name = product.name
+            marshaled_row['sender_name'] = sender_name
+
+            rows.append(marshaled_row)
+            
         return rows, 200
 
 ###ENPOINTS
