@@ -51,10 +51,11 @@ class Login(Resource):
         
         if match_user is None:
             return {'message': 'Username atau password yang kamu masukkan salah'}, 401
-        user_marshal=marshal(match_user, User.response_fields)
+        user_marshal = marshal(match_user, User.response_fields)
+
         # Create the token
         token = create_access_token(identity = args['username'], user_claims = user_marshal)
-        return {'message': 'Login berhasil', 'token': token}, 200
+        return {'message': 'Login berhasil', 'company_name': user_marshal['name'], 'token': token}, 200
 
 
 

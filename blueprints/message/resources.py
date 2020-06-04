@@ -6,6 +6,7 @@ import requests
 import json
 from .model import Message
 from blueprints.product.model import Product
+from blueprints.user.model import User
 
 ##Import packages for celery tasks
 from .tasks import send_message_file,send_message_image,send_message_text,callback
@@ -93,7 +94,7 @@ class GetHistory(Resource):
     def options(self):
         return 200
     
-    # @jwt_required
+    @jwt_required
     def get(self):
         
         parser=reqparse.RequestParser()
@@ -101,7 +102,13 @@ class GetHistory(Resource):
         parser.add_argument('rp', location='args', type=int, default=25)
         args=parser.parse_args()
 
-        get_history= Message.query.filter_by(from_number='14157386170')
+        # Find sender ID
+        claims = get_jwt_claims()
+        user_id = claims['id']
+        sender = Product.query.filter_by(user_id = user_id).all()
+        sender_id = map(lambda sender_object: sender_object.id, sender)
+
+        get_history= Message.query.filter(Message.sender_id.in_(sender_id))
         
         if get_history == None:
             return {'status': 'Data Tidak Ditemukan'}, 403
@@ -130,7 +137,14 @@ class GetById(Resource):
         parser.add_argument('p', location='args', type=int,default=1)  
         parser.add_argument('rp', location='args', type=int, default=25)
         args=parser.parse_args()
-        get_history= Message.query.filter_by(uuid=uuid)
+        
+        # Find sender ID
+        claims = get_jwt_claims()
+        user_id = claims['id']
+        sender = Product.query.filter_by(user_id = user_id).all()
+        sender_id = map(lambda sender_object: sender_object.id, sender)
+
+        get_history = Message.query.filter(Message.sender_id.in_(sender_id)).filter_by(uuid = uuid)
         
         if get_history == None:
             return {'status': 'Data Tidak Ditemukan'}, 403
@@ -149,7 +163,14 @@ class GetByNum(Resource):
         parser.add_argument('p', location='args', type=int,default=1)  
         parser.add_argument('rp', location='args', type=int, default=25)
         args=parser.parse_args()
-        get_history= Message.query.filter_by(to_number="{}".format(phone_num))
+
+        # Find sender ID
+        claims = get_jwt_claims()
+        user_id = claims['id']
+        sender = Product.query.filter_by(user_id = user_id).all()
+        sender_id = map(lambda sender_object: sender_object.id, sender)
+
+        get_history = Message.query.filter(Message.sender_id.in_(sender_id)).filter_by(to_number="{}".format(phone_num))
         
         if get_history == None:
             return {'status': 'Data Tidak Ditemukan'}, 403
