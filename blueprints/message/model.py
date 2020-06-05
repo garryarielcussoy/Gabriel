@@ -47,7 +47,7 @@ class Message(db.Model):
 
     # Required fields when create new instances of "Message" class
     def __init__(
-        self, uuid, sender_id, from_number, receiver, to_number, in_or_out, message_type, text_message, media_url, caption, status
+        self, uuid, sender_id, from_number, receiver, to_number, in_or_out, message_type, text_message, media_url, caption, status, timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     ):
         self.uuid = uuid
         self.sender_id = sender_id
@@ -60,6 +60,7 @@ class Message(db.Model):
         self.media_url = media_url
         self.caption = caption
         self.status = status
+        self.timestamp = timestamp
         
     # Reprsentative form to be shown in log
     def __repr__(self):

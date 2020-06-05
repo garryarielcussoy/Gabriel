@@ -90,7 +90,7 @@ class Otp(Resource):
         text_message += "Untuk melanjutkan proses, silahkan masukkan kode OTP berikut: " + otp_code
 
         # Send otp code to related end-user
-        bulk_message_text.s(product_id, to_number, text_message, 'otp').apply_async()
+        bulk_message_text.s(product_id, to_number, text_message, 'otp', datetime.now().strftime("%Y-%m-%d %H:%M:%S")).apply_async()
 
         # Send otp code to third party
         return {'to_number': to_number, 'otp_code': otp_code, 'message': 'Kode OTP telah dikirimkan ke user terkait'}, 200

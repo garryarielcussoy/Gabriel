@@ -32,9 +32,10 @@ The following function is used to bulk messaging of text type in background proc
 :param string text_message: The message of type text which will be sent to receiver
 :param string indicator: Variable which indicates general or otp type message
 :param string receiver: Name of the receiver
+:param string timestamp: The time when the task is received
 '''
 @celery.task(name = "bulk_message_text")
-def bulk_message_text(product_id, to_number, text_message, indicator = 'general', receiver = ''):
+def bulk_message_text(product_id, to_number, text_message, indicator = 'general', receiver = '', timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")):
     # Get related product and auth key
     product = Product.query.filter_by(id = product_id).first()
     sender_id = product.id
@@ -101,7 +102,8 @@ def bulk_message_text(product_id, to_number, text_message, indicator = 'general'
         text_message = text_message,
         media_url = None,
         caption = None,
-        status = status
+        status = status,
+        timestamp = timestamp
     )
 
     # Store new record into database
@@ -119,9 +121,10 @@ The following function is used to bulk messaging of image type in background pro
 :param string media_url: Image url where the image (which will be sent to receiver) lies
 :param string caption: Caption of the image
 :param string receiver: Name of the receiver
+:param string timestamp: The time when the task is received
 '''
 @celery.task(name = "bulk_message_image")
-def bulk_message_image(product_id, to_number, media_url, caption, receiver = ''):
+def bulk_message_image(product_id, to_number, media_url, caption, receiver = '', timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")):
     # Get related product and auth key
     product = Product.query.filter_by(id = product_id).first()
     sender_id = product.id
@@ -187,7 +190,8 @@ def bulk_message_image(product_id, to_number, media_url, caption, receiver = '')
         text_message = None,
         media_url = media_url,
         caption = caption,
-        status = 'sent'
+        status = 'sent',
+        timestamp = timestamp
     )
 
     # Store new record into database
@@ -205,9 +209,10 @@ The following function is used to bulk messaging of file type in background proc
 :param string media_url: File url where the file (which will be sent to receiver) lies
 :param string caption: Caption of the file
 :param string receiver: Name of the receiver
+:param string timestamp: The time when the task is received
 '''
 @celery.task(name = "bulk_message_file")
-def bulk_message_file(product_id, to_number, media_url, caption, receiver = ''):
+def bulk_message_file(product_id, to_number, media_url, caption, receiver = '', timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")):
     # Get related product and auth key
     product = Product.query.filter_by(id = product_id).first()
     sender_id = product.id
@@ -273,7 +278,8 @@ def bulk_message_file(product_id, to_number, media_url, caption, receiver = ''):
         text_message = None,
         media_url = media_url,
         caption = caption,
-        status = 'sent'
+        status = 'sent',
+        timestamp = timestamp
     )
 
     # Store new record into database
