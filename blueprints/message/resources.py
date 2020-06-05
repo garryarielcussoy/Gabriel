@@ -7,7 +7,7 @@ import json
 from .model import Message
 from blueprints.product.model import Product
 from blueprints.user.model import User
-
+from datetime import datetime, timedelta
 ##Import packages for celery tasks
 from .tasks import send_message_file,send_message_image,send_message_text,callback
 from celery import Celery 
@@ -36,7 +36,7 @@ class MessageOne(Resource):
         parser.add_argument('media_url', location='json', default='None')
         parser.add_argument('caption', location='json', default='None')
         parser.add_argument('status', location='json', default='ON PROCESS')
-        parser.add_argument('timestamp', location='json', default='ON PROCESS')
+        parser.add_argument('timestamp', location='json' default= datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         
         args=parser.parse_args()
         
@@ -46,21 +46,21 @@ class MessageOne(Resource):
       
         result=[]
         if args['message_type']=='text':
-            send_message_text.s(args['sender_id'],args['receiver'],args['to_number'], args['text_message'], args['in_or_out']).apply_async()
+            send_message_text.s(args['sender_id'],args['receiver'],args['to_number'], args['text_message'], args['in_or_out'], args['timestamp']).apply_async()
             
         elif args['message_type']=='image':
             if args['media_url']=='None':
                 return {'status':'Media URL Cannot Be Empty'}, 404
             else:
-                send_message_image.s(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out']).apply_async()
+                send_message_image.s(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out'], args['timestamp']).apply_async()
                
         elif args['message_type']=='file':
             if args['media_url']=='None':
                 return {'status':'Media URL Cannot Be Empty'}, 404
             else:
-                send_message_file.s(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out']).apply_async()
+                send_message_file.s(args['sender_id'],args['receiver'],args['to_number'], args['media_url'],args['caption'], args['in_or_out'], args['timestamp']).apply_async()
                 
-
+        
 
         return {'status':'Terkirim'},200
 
@@ -81,12 +81,8 @@ class CallbackMsg(Resource):
         data=request.get_json()
 
         #Manage Its Response To Be More Scheduled & Easy To Be Monitored
-        callback.apply_async(args=[data], retry=True, retry_policy={
-            'max_retries':2,
-            'interval_start':0,
-            'interval_step':0,
-            'interval_max':60,
-        })
+        callback.s(data).apply_async()
+    
         return 200
 
 #Get The History of All Messages Sent, Only Specific User Who Has Been Login Can Access 
