@@ -20,7 +20,7 @@ celery.conf.update(app.config)
 ###Prepare Access For External API Requirements
 nexmo_host="https://messages-sandbox.nexmo.com/v0.1/messages"
 secret_key='299a3afd'
-sender='14157386170'
+# sender='14157386170'
 api_key='tchOyRAB5oEtSrBW'
 headers={
     'Content-Type':'application/json',
@@ -36,7 +36,7 @@ headers={
 '''
 
 @celery.task(name="send_message_text")
-def send_message_text(sender_id,receiver_name,receiver_phone, text_message, in_out,timestamp):
+def send_message_text(sender_id,sender,receiver_name,receiver_phone, text_message, in_out,timestamp):
     data='''{
             "from":{ "type": "whatsapp", "number": "%s" },
             "to": { "type": "whatsapp", "number": "%s" },
@@ -64,7 +64,7 @@ def send_message_text(sender_id,receiver_name,receiver_phone, text_message, in_o
                     received it from other ("in"), Default is set to be "out"
 '''
 @celery.task(name="send_message_image")
-def send_message_image(sender_id,receiver_name,receiver_phone, media_url, caption, in_out, timestamp):
+def send_message_image(sender_id,sender,receiver_name,receiver_phone, media_url, caption, in_out, timestamp):
     data='''{
             "from":{ "type": "whatsapp", "number": "%s" },
             "to": { "type": "whatsapp", "number": "%s" },
@@ -95,7 +95,7 @@ def send_message_image(sender_id,receiver_name,receiver_phone, media_url, captio
 '''
 
 @celery.task(name="send_message_file")
-def send_message_file(sender_id,receiver_name,receiver_phone, media_url, caption, in_out, timestamp):
+def send_message_file(sender_id,sender,receiver_name,receiver_phone, media_url, caption, in_out, timestamp):
     data='''{
             "from":{ "type": "whatsapp", "number": "%s" },
             "to": { "type": "whatsapp", "number": "%s" },
