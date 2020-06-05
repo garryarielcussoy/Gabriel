@@ -36,7 +36,7 @@ class MessageOne(Resource):
         parser.add_argument('media_url', location='json', default='None')
         parser.add_argument('caption', location='json', default='None')
         parser.add_argument('status', location='json', default='ON PROCESS')
-        parser.add_argument('timestamp', location='json' default= datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        parser.add_argument('timestamp', location='json',default= datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         
         args=parser.parse_args()
         
