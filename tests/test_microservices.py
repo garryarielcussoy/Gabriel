@@ -99,9 +99,9 @@ class TestProduct():
 
         }
 
-        res.cleint.put('/product/1',
+        res=client.put('/product/1',
         headers={'Authorization':'Bearer ' + token},
-        data=data,
+        json=data,
         content_type="application/json")
 
         assert res.status_code==200
