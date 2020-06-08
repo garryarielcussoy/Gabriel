@@ -125,7 +125,7 @@ class GetHistory(Resource):
         return rows, 200
     
 
-    
+#Get history table by using message uuid
 class GetById(Resource):
     def options(self, uuid):
         return 200
@@ -163,7 +163,7 @@ class GetById(Resource):
 
         return rows, 200
 
-    
+#Get history table by using receiver phone number
 class GetByNum(Resource):
     def options(self, phone_num):
         return 200
