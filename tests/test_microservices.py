@@ -88,6 +88,24 @@ class TestProduct():
         content_type="application/json")
 
         assert res.status_code==200
+
+    def test_update_product(self,client):
+        token=create_token(False)
+
+        data={
+            'name':"Tanam Dari Shopee",
+            'phone_number':"077777755677",
+            'api_key':"ooooo-pppp"
+
+        }
+
+        res.cleint.put('/product/1',
+        headers={'Authorization':'Bearer ' + token},
+        data=data,
+        content_type="application/json")
+
+        assert res.status_code==200
+
     def test_options_product(self,client):
         token=create_token(False)
 
@@ -96,6 +114,8 @@ class TestProduct():
         content_type="application/json")
 
         assert res.status_code==200
+
+
 
 
 
