@@ -10,6 +10,7 @@ from unittest import TestCase
 from blueprints.message.tasks import send_message_text,send_message_image,send_message_file
 import requests 
 import unittest
+from datetime import datetime,timedelta
 #Mocking Nexmo API
 
 
@@ -119,18 +120,21 @@ def mock_post_request(*args, **kwargs):
 
 class TestExternalRequest():
     @mock.patch('requests.post', side_effect=mock_post_request)
-    def test_send_message_test(self, mock_post):
-        response=send_message_text(1,"Bambang", "6285659229599","UNIT TEST","out")
+    def test_send_message_text(self, mock_post):
+        date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        response=send_message_text(1,'14157386170',"Bambang","6285659229599","UNIT TEST","out",date)
         assert response=='api-TEST-015'
 
     
     @mock.patch('requests.post', side_effect=mock_post_request)
     def test_send_message_image(self, mock_post):
-        response=send_message_image(1,"Bambang", "6285659229599","image_url","example of image URL","out")
+        date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        response=send_message_image(1,'14157386170',"Bambang", "6285659229599","image_url","example of image URL","out",date)
         assert response=='api-TEST-015'
 
     @mock.patch('requests.post', side_effect=mock_post_request)
     def test_send_message_file(self, mock_post):
-        response=send_message_file(1,"Bambang", "6285659229599","file_url","example of file URL","out")
+        date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        response=send_message_file(1,'14157386170',"Bambang", "6285659229599","file_url","example of file URL","out",date)
         assert response=='api-TEST-015'
 
