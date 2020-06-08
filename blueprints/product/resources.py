@@ -77,14 +77,15 @@ class UpdateProduct(Resource):
                 index.name=args['name']
                 index.phone_number=args['phone_number']
                 index.api_key=args['api_key']
+                #update and push it to database
+                db.session.commit()
                 #return the result response
                 return marshal(index, Product.response_fields),200
             else:
                 #If the product id is not exist in table of database
                 return {'status':"Data Tidak Ditemukan"},404
         
-        #update and push it to database
-        db.session.commit()
+    
         
         
 

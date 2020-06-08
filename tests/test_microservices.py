@@ -46,17 +46,29 @@ class TestLogin():
 
 class TestHistory():
     def test_get_history_all(self,client):
-        res=client.get("/message/history", content_type="application/json")
+        token=create_token(False)
+
+        res=client.get("/message/history", 
+        headers={'Authorization':'Bearer ' + token},
+        content_type="application/json")
         
         assert res.status_code==200
 
     def test_get_history_by_uuid(self,client):
-        res=client.get("/message/history/id/api-text-002", content_type="application/json")
+        token=create_token(False)
+
+        res=client.get("/message/history/id/api-text-002", 
+        headers={'Authorization':'Bearer ' + token},
+        content_type="application/json")
 
         assert res.status_code==200
 
     def test_get_history_by_phone_num(self,client):
-        res=client.get("/message/history/num/6285659229599", content_type="application/json")
+        token=create_token(False)
+
+        res=client.get("/message/history/num/6285659229599",
+        headers={'Authorization':'Bearer ' + token},
+        content_type="application/json")
 
         assert res.status_code==200
     
@@ -99,9 +111,9 @@ class TestProduct():
 
         }
 
-        res.cleint.put('/product/1',
+        res=client.put('/product/1',
         headers={'Authorization':'Bearer ' + token},
-        data=data,
+        json=data,
         content_type="application/json")
 
         assert res.status_code==200
