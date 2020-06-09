@@ -126,6 +126,15 @@ class TestProduct():
         content_type="application/json")
 
         assert res.status_code==200
+    
+    def test_options_edit_product(self,client):
+        token=create_token(False)
+
+        res=client.options('/product/1',
+        headers={'Authorization':'Bearer ' + token},
+        content_type="application/json")
+
+        assert res.status_code==200
 
 
 

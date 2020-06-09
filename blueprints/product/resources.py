@@ -61,6 +61,9 @@ class AddProduct(Resource):
 
 #Update product or edit it out
 class UpdateProduct(Resource):
+    def options(self, id):
+        return 200
+
     @jwt_required
     def put(self,id):
         parser=reqparse.RequestParser()
