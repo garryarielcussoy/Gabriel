@@ -7,6 +7,7 @@ from flask_jwt_extended import jwt_required,create_access_token, get_jwt_claims,
 import requests
 import json
 from .model import Message
+from blueprints.product.model import Product
 
 
 # Setup and initialize Celery
@@ -19,9 +20,9 @@ celery.conf.update(app.config)
 
 ###Prepare Access For External API Requirements
 nexmo_host="https://messages-sandbox.nexmo.com/v0.1/messages"
-secret_key='299a3afd'
+# secret_key='299a3afd'
 # sender='14157386170'
-api_key='tchOyRAB5oEtSrBW'
+# api_key='tchOyRAB5oEtSrBW'
 headers={
     'Content-Type':'application/json',
     'Accept':'application/json'
@@ -37,6 +38,15 @@ headers={
 
 @celery.task(name="send_message_text")
 def send_message_text(sender_id,sender,receiver_name,receiver_phone, text_message, in_out,timestamp):
+    # Get related product and auth key
+    product = Product.query.filter_by(id = sender_id).first()
+    api_secret_key = product.api_key
+
+    # Formatting api key
+    api_key_list = api_secret_key.split(":")
+    secret_key = api_key_list[0]
+    api_key = api_key_list[1]
+    
     data='''{
             "from":{ "type": "whatsapp", "number": "%s" },
             "to": { "type": "whatsapp", "number": "%s" },
@@ -65,6 +75,15 @@ def send_message_text(sender_id,sender,receiver_name,receiver_phone, text_messag
 '''
 @celery.task(name="send_message_image")
 def send_message_image(sender_id,sender,receiver_name,receiver_phone, media_url, caption, in_out, timestamp):
+    # Get related product and auth key
+    product = Product.query.filter_by(id = sender_id).first()
+    api_secret_key = product.api_key
+
+    # Formatting api key
+    api_key_list = api_secret_key.split(":")
+    secret_key = api_key_list[0]
+    api_key = api_key_list[1]
+    
     data='''{
             "from":{ "type": "whatsapp", "number": "%s" },
             "to": { "type": "whatsapp", "number": "%s" },
@@ -96,6 +115,15 @@ def send_message_image(sender_id,sender,receiver_name,receiver_phone, media_url,
 
 @celery.task(name="send_message_file")
 def send_message_file(sender_id,sender,receiver_name,receiver_phone, media_url, caption, in_out, timestamp):
+    # Get related product and auth key
+    product = Product.query.filter_by(id = sender_id).first()
+    api_secret_key = product.api_key
+
+    # Formatting api key
+    api_key_list = api_secret_key.split(":")
+    secret_key = api_key_list[0]
+    api_key = api_key_list[1]
+    
     data='''{
             "from":{ "type": "whatsapp", "number": "%s" },
             "to": { "type": "whatsapp", "number": "%s" },
