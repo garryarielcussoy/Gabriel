@@ -21,8 +21,8 @@ class AddProduct(Resource):
         parser=reqparse.RequestParser()
         parser.add_argument('user_id', location='json')
         parser.add_argument('name', location='json', required=True)
-        parser.add_argument('phone_number', location='json')
-        parser.add_argument('api_key', location='json', default="tchOyRAB5oEtSrBW")
+        parser.add_argument('phone_number', location='json', default='6285156426189')
+        parser.add_argument('api_key', location='json', default="8fcd4015:2ORNZpLnvuV3AnOl")
         args=parser.parse_args()
 
         #Only getting data query which is associated with user id
