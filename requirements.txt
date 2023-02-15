@@ -10,4 +10,4 @@ requests
 pytest
 pytest-cov
 flask_cors
-werkzeug==0.16.0
+werkzeug==2.2.3
